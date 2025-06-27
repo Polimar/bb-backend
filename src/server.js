@@ -22,14 +22,29 @@ const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
     origin: (origin, callback) => {
-      // Allow multiple origins for development
+      // Railway deployment - allow multiple origins
       const allowedOrigins = [
         'http://10.40.10.180:3001',
         'http://127.0.0.1:3001',
-        'http://localhost:3001'
+        'http://localhost:3001',
+        /^https:\/\/.*\.railway\.app$/,  // Railway frontend URLs
+        /^https:\/\/.*\.up\.railway\.app$/,  // Railway frontend URLs (legacy)
+        /^https:\/\/.*\.onrender\.com$/  // Render URLs as fallback
       ];
       
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+      
+      const isAllowed = allowedOrigins.some(allowed => {
+        if (typeof allowed === 'string') {
+          return allowed === origin;
+        }
+        return allowed.test(origin);
+      });
+      
+      if (isAllowed) {
         callback(null, true);
       } else {
         console.log('CORS blocked origin:', origin);
@@ -54,14 +69,29 @@ app.use(helmet());
 app.use(compression());
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow multiple origins for development
+    // Railway deployment - allow multiple origins
     const allowedOrigins = [
       'http://10.40.10.180:3001',
       'http://127.0.0.1:3001', 
-      'http://localhost:3001'
+      'http://localhost:3001',
+      /^https:\/\/.*\.railway\.app$/,  // Railway frontend URLs
+      /^https:\/\/.*\.up\.railway\.app$/,  // Railway frontend URLs (legacy)
+      /^https:\/\/.*\.onrender\.com$/  // Render URLs as fallback
     ];
     
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+    
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (typeof allowed === 'string') {
+        return allowed === origin;
+      }
+      return allowed.test(origin);
+    });
+    
+    if (isAllowed) {
       callback(null, true);
     } else {
       console.log('CORS blocked origin:', origin);

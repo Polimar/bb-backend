@@ -2,10 +2,16 @@ const { Kafka } = require('kafkajs');
 
 class KafkaProducer {
   constructor() {
-    // Configurazione Kafka
+    // Configurazione Kafka per Railway
     const kafkaConfig = {
       clientId: process.env.KAFKA_CLIENT_ID || 'brainbrawler-game-service',
-      brokers: (process.env.KAFKA_BROKERS || 'localhost:9092').split(',')
+      brokers: (process.env.KAFKA_BROKERS || 'kafka:9092').split(','),
+      connectionTimeout: 10000,
+      requestTimeout: 30000,
+      retry: {
+        initialRetryTime: 100,
+        retries: 8
+      }
     };
 
     // Configurazione SSL per production (CloudKarafka)

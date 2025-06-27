@@ -1,35 +1,52 @@
-# 🎮 BrainBrawler Backend - Render.com
+# 🚂 BrainBrawler Backend - Railway.app
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Polimar/bb-backend)
+Backend Node.js per BrainBrawler - Quiz multiplayer con Kafka + Redis + Socket.io
 
-## ⚡ Deploy su Render
+## ⚡ Deploy su Railway
 
-1. **Clicca il bottone Deploy** sopra
-2. **Collega GitHub** account
-3. **Aggiungi variabili d'ambiente**:
+### 1. Setup Servizi
+
+1. **PostgreSQL**: New → Database → PostgreSQL
+2. **Redis**: New → Database → Redis
+3. **Kafka**: New → Template → "Kafka" (4 servizi: Consumer, Kafka, Producer, Zookeeper)
+
+### 2. Deploy Backend
+
+1. **New Service** → **GitHub Repo**: `Polimar/bb-backend`
+2. **Aggiungi variabili d'ambiente**:
 
 ```bash
 NODE_ENV=production
 DATABASE_URL=${{Postgres.DATABASE_URL}}
 REDIS_URL=${{Redis.REDIS_URL}}
-KAFKA_ENABLED=false
+KAFKA_ENABLED=true
+KAFKA_BROKERS=kafka:9092
+KAFKA_CLIENT_ID=brainbrawler-game-service
 SMTP_ENABLED=false
 GAME_ENGINE_ENABLED=true
 SOCKET_IO_ENABLED=true
-JWT_SECRET=your_jwt_secret_here
+JWT_SECRET=your_super_secure_jwt_secret_here
 ADMIN_EMAIL=admin@yourdomain.com
 ```
 
-4. **Aggiungi servizi gratuiti**:
-   - PostgreSQL (free)
-   - Redis (free 25MB)
+### 3. Collegamenti Servizi
 
-## 🔧 Caratteristiche
+Railway collega automaticamente i servizi tramite variabili:
+- `${{Postgres.DATABASE_URL}}` → PostgreSQL
+- `${{Redis.REDIS_URL}}` → Redis  
+- `kafka:9092` → Kafka interno
 
-- ✅ **750 ore gratuite/mese**
-- ✅ **Dockerfile supportato**
-- ✅ **Auto-deploy da Git**
-- ✅ **HTTPS gratuito**
-- ✅ **PostgreSQL + Redis inclusi**
+## 🚀 Caratteristiche
 
-Frontend su: https://github.com/Polimar/bb-frontend
+- ✅ **Kafka Completo** (Producer + Consumer + Zookeeper)
+- ✅ **Redis Cache** per sessioni
+- ✅ **PostgreSQL** con Prisma ORM
+- ✅ **Socket.io** real-time communication
+- ✅ **Docker ottimizzato** per Railway
+- ✅ **CORS configurato** per Railway domains
+- ✅ **Auto-deploy** da Git push
+- ✅ **Health check** integrato
+
+## 🔗 Frontend
+
+https://github.com/Polimar/bb-frontend
