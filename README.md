@@ -50,3 +50,4 @@ Railway collega automaticamente i servizi tramite variabili:
 ## 🔗 Frontend
 
 https://github.com/Polimar/bb-frontend
+# Force Railway redeploy Fri Jun 27 08:19:34 PM UTC 2025
