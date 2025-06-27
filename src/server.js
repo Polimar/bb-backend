@@ -27,6 +27,7 @@ const io = socketIo(server, {
         'http://10.40.10.180:3001',
         'http://127.0.0.1:3001',
         'http://localhost:3001',
+        'https://bb-frontend-production.up.railway.app',  // Exact Railway frontend URL
         /^https:\/\/.*\.railway\.app$/,  // Railway frontend URLs
         /^https:\/\/.*\.up\.railway\.app$/,  // Railway frontend URLs (legacy)
         /^https:\/\/.*\.onrender\.com$/  // Render URLs as fallback
@@ -47,7 +48,7 @@ const io = socketIo(server, {
       if (isAllowed) {
         callback(null, true);
       } else {
-        console.log('CORS blocked origin:', origin);
+        console.log('❌ Socket.io CORS blocked origin:', origin);
         callback(new Error('Not allowed by CORS'));
       }
     },
@@ -74,10 +75,13 @@ app.use(cors({
       'http://10.40.10.180:3001',
       'http://127.0.0.1:3001', 
       'http://localhost:3001',
+      'https://bb-frontend-production.up.railway.app',  // Exact Railway frontend URL
       /^https:\/\/.*\.railway\.app$/,  // Railway frontend URLs
       /^https:\/\/.*\.up\.railway\.app$/,  // Railway frontend URLs (legacy)
       /^https:\/\/.*\.onrender\.com$/  // Render URLs as fallback
     ];
+    
+    console.log('🔧 CORS check for origin:', origin);
     
     if (!origin) {
       callback(null, true);
@@ -92,13 +96,17 @@ app.use(cors({
     });
     
     if (isAllowed) {
+      console.log('✅ CORS allowed for origin:', origin);
       callback(null, true);
     } else {
-      console.log('CORS blocked origin:', origin);
+      console.log('❌ CORS blocked origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  credentials: true,
+  optionsSuccessStatus: 200
 }));
 app.use(express.json({ limit: '10mb' }));
 
