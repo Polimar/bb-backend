@@ -19,41 +19,12 @@ const questionsRoutes = require('./routes/questions');
 
 const app = express();
 const server = http.createServer(app);
+// 🔧 DEBUG: Socket.io CORS completamente aperto per testing
 const io = socketIo(server, {
   cors: {
-    origin: (origin, callback) => {
-      // Railway deployment - allow multiple origins
-      const allowedOrigins = [
-        'http://10.40.10.180:3001',
-        'http://127.0.0.1:3001',
-        'http://localhost:3001',
-        'https://bb-frontend-production.up.railway.app',  // Exact Railway frontend URL
-        /^https:\/\/.*\.railway\.app$/,  // Railway frontend URLs
-        /^https:\/\/.*\.up\.railway\.app$/,  // Railway frontend URLs (legacy)
-        /^https:\/\/.*\.onrender\.com$/  // Render URLs as fallback
-      ];
-      
-      if (!origin) {
-        callback(null, true);
-        return;
-      }
-      
-      const isAllowed = allowedOrigins.some(allowed => {
-        if (typeof allowed === 'string') {
-          return allowed === origin;
-        }
-        return allowed.test(origin);
-      });
-      
-      if (isAllowed) {
-        callback(null, true);
-      } else {
-        console.log('❌ Socket.io CORS blocked origin:', origin);
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: '*',  // TEMPORANEO: accetta tutte le origini
     methods: ["GET", "POST"],
-    credentials: true
+    credentials: false  // ATTENZIONE: disabilitato per wildcard origin
   }
 });
 
@@ -68,44 +39,12 @@ app.locals.gameEngine = gameEngine;
 // Middleware
 app.use(helmet());
 app.use(compression());
+// 🔧 DEBUG: CORS completamente aperto per testing
 app.use(cors({
-  origin: (origin, callback) => {
-    // Railway deployment - allow multiple origins
-    const allowedOrigins = [
-      'http://10.40.10.180:3001',
-      'http://127.0.0.1:3001', 
-      'http://localhost:3001',
-      'https://bb-frontend-production.up.railway.app',  // Exact Railway frontend URL
-      /^https:\/\/.*\.railway\.app$/,  // Railway frontend URLs
-      /^https:\/\/.*\.up\.railway\.app$/,  // Railway frontend URLs (legacy)
-      /^https:\/\/.*\.onrender\.com$/  // Render URLs as fallback
-    ];
-    
-    console.log('🔧 CORS check for origin:', origin);
-    
-    if (!origin) {
-      callback(null, true);
-      return;
-    }
-    
-    const isAllowed = allowedOrigins.some(allowed => {
-      if (typeof allowed === 'string') {
-        return allowed === origin;
-      }
-      return allowed.test(origin);
-    });
-    
-    if (isAllowed) {
-      console.log('✅ CORS allowed for origin:', origin);
-      callback(null, true);
-    } else {
-      console.log('❌ CORS blocked origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: '*',  // TEMPORANEO: accetta tutte le origini
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  credentials: true,
+  credentials: false,  // ATTENZIONE: disabilitato per wildcard origin
   optionsSuccessStatus: 200
 }));
 app.use(express.json({ limit: '10mb' }));
